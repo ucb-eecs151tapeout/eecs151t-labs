@@ -1,2 +1,3 @@
 # fa24-labs
-Fall 2024 public lab manual.
+
+Public lab manual for Fall 2024.
