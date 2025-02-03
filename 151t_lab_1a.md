@@ -1,86 +1,4 @@
-# Prelab 1) Git  
-
-Complete the [git bootcamp assignment](https://classroom.github.com/a/1Mubm_xA) and make a PR (pull request) to the template repo adding your name to STUDENTS.md! Don't forget to submit the Gradescope assignment.
-
-# Lab 1a) Chisel  Bootcamp
-
-## What is Chisel - and why Chisel?
-
-In EECS151, you learned the HDL (hardware description language) Verilog.  Much of Berkeley research and _some_ industry uses the increasingly popular HDL Chisel. If you've taken EECS251B or EECS194 Tapeout, you have already been to exposed to Chisel and have heard this shpeel.. if not, this background segment is for you!
-
-### (A More Critical) Verilog Background
-
-**Verilog** was invented in the 1980s as a simulation language. Synthesis was an afterthought.  Around the same time as the origin of Verilog, the US Department of Defense developed **VHDL** (A double acronym! VSIC (Very High-Speed Integrated Circuit) HDL). Because it was in the public domain it began to grow in popularity. Afraid of losing market share, Cadence opened Verilog to the public in 1990.
-
-Verilog is the language of choice of Silicon Valley companies, initially because of high quality tool support and its similarity to C-language syntax. The latest Verilog version is “**System Verilog**”. VHDL is still popular within the government, in Europe and Japan, and some universities.
-
-However, because Verilog was developed as a simulation language, it has many limitations that arguably System Verilog does not fully solve. 
-* Many constructs don’t synthesize: `deassign`, timing constructs..
-* Others lead to mysterious results: for-loops..
-* It is difficult to understand synthesis implications of procedural assignment (`always` blocks), and blocking versus non-blocking assignments.. 
-* Verilog has very weak “meta-programming” support for "compiling" circuits..
-
-Many companies "solve" this with employee rules, lint style checkers, embedded TCL scripting.. Berkeley proposes Chisel as an alternative solution.
-
-### Chisel: Constructing Hardware In a Scala Embedded Language
-
-**Chisel** is an experimental attempt at a fresh start to address these issues. Through this lab you will learn how to use its basic set of design construction primitives. But Chisel's biggest claim to fame is its “meta-programming” support for building circuit **generators**.  You will soon learn those as well. 
-
-Chisel is based on **Scala**, which allows integration of functional programming, object oriented programming, strong typing, and type inference into the HDL. Chisel can generate a high-speed C++-based cycle-accurate software simulator, or low-level Verilog designed to pass on to standard ASIC or FPGA tools for synthesis and place and route. You don't need to worry about each of these details.. 
-
-TL;DR, **Chipyard** (which you will learn about in part B of this lab) is written in Chisel. Therefore, we will use Chisel in this class.
-
-## Learning Chisel 
-
-Instead of reinventing the wheel, we will make use of the existing **Chisel Bootcamp** to introduce ourselves to Chisel. 
-
-**(1) Read through the Chisel Bootcamp introduction.** 
-
-You will find our fork of the Bootcamp at:
-``https://github.com/ucb-eecs151tapeout/eecs151t-chisel-bootcamp``
-
-We will have some conceptual questions regarding Chisel on Gradescope.
-
-**(2) Launch the Chisel Bootcamp Jupyter notebook instance.** 
-
-The guide is under "Getting Started". There's a local setup version, but the environment is not the easiest to setup, so we recommend the notebook.  (Note that the notebook Chisel environment is a bit different from the Chipyard Chisel environment, so you *may* run into bugs in the future... Sorry.)
-
-**(3) Go through Modules 1-3 of the Bootcamp.** 
-
-You may want to go through Gradescope in parallel, as we'll want you to submit Chisel examples.  If you're a Chisel expert, you can skip the Bootcamp and just do the Gradescope - that's totally fine. If you're new, you'll find the Bootcamp should make the Gradescope assignment pretty easy.
-
-Module 4 (FIRRTL) is interesting but optional. Note that FIRRTL has undergone major changes that we're pretty sure are not yet reflected in the Bootcamp.  
-
-**(4) Fill out the Chisel part of Lab 1 on Gradescope.**
-
-If you haven't already!
-
-## Using Chisel 
-
-Having a Bootcamp is nice, but you likely won't remember everything you did once you dig into Chipyard.. You can use the Bootcamp for reference. You can also use a much more compact [cheat sheet](https://inst.eecs.berkeley.edu/~cs250/sp17/handouts/chisel-cheatsheet3.pdf), such as:
- ![https://inst.eecs.berkeley.edu/~cs250/sp17/handouts/chisel-cheatsheet3.pdf]
-In practice, Chipyard implements a lot of unique Chisel constructs that are best learned by working on Chipyard itself. So don't stress too much about this part and feel free to move on to part B even if you don't feel like a Chisel expert!
-
-## Chisel Resources
-
-Introduction heavily references:
-- [Spring 2016 John Wawrzynek's Chisel Introduction](https://inst.eecs.berkeley.edu/~cs250/sp16/lectures/lec02-sp16.pdf)
-
-More resources:
-- [Chisel website: https://www.chisel-lang.org/](https://www.chisel-lang.org/)
-- [Chisel Cheatsheet 3](https://inst.eecs.berkeley.edu/~cs250/sp17/handouts/chisel-cheatsheet3.pdf)
-- [Original Chisel Bootcamp](https://github.com/freechipsproject/chisel-bootcamp)
-- [Detailed Chisel API Documentation](https://www.chisel-lang.org/api/chisel3/latest/)
-- [Intensivate's Chisel Learning Journey](https://github.com/Intensivate/learning-journey/wiki)
-- You can also look at any recent semester of EECS251B or EECS194 Tapeout and find other professors' takes on Chisel.
-
-While this is optional for this tapeout, students interested in designing accelerators and other IP (writing significant RTL) are especially encouraged to consult these resources. 
-
-A bit older - the Chisel origins:
-- [Chisel Tutorial Paper 2012](https://aspire.eecs.berkeley.edu/chisel-archive/tutorial-20121026.pdf)
-- [Chisel DAC 2012 Paper](https://aspire.eecs.berkeley.edu/chisel-archive/chisel-dac2012.pdf)
-
-# Lab 1b) Chipyard Setup
+# Lab 1a) Chipyard Setup
 
 ## Background: Chipyard
 
@@ -99,13 +17,15 @@ If you ever need more resources:
 
 We will now set up your Chipyard environment. 
 
-**(1)** **First, accept the GitHub classroom assignment using the link provided by staff.** 
+**(1)** **First, make a fork of our public Chipyard repo fork.** 
 
-It will look something like: ``https://classroom.github.com/a/LETTERSHERE``
+It will look something like: ``https://github.com/ucb-eecs151tapeout/ofot-chipyard``
 
 **(2) Once your personal repo is created, copy down the SSH clone URL.**
 
 Don't clone Chipyard locally.  For this course, you must work in the `/scratch` directory on a lab machine of your choice. Since `/scratch` is not automatically backed up, you will need to login to the same server each time. Chipyard will generate too much data for it to fit in your home directory.
+
+> Note: As of Fall 2024, only eda-1 has been tested.
 
 **(3) Make sure you know your instructional account login.**
 
@@ -118,7 +38,7 @@ You may need to generate an instructional account:
 
 Once the account has been created, you can email your class account form to yourself to have a record of your account information. You can follow the instructions on the emailed form to change your Linux password with `ssh update.eecs.berkeley.edu` and following the prompts.
 
-As of this writing, we are still figuring out these accounts, so please post questions if you run into issues. Like EECS151, the servers used for this class are most likely primarily `eda-[1-4].eecs.berkeley.edu`.
+As of this writing, we are still figuring out these accounts, so please post questions if you run into issues. Like EECS151, the servers used for this class are most likely primarily `eda-[1-4].eecs.berkeley.edu`.
 
 You can check which machines are available at: [https://hivemind.eecs.berkeley.edu/](https://hivemind.eecs.berkeley.edu/).
 
@@ -152,7 +72,7 @@ How To:
     
     Advanced users may wish to install Windows Subsystem for Linux ([https://docs.microsoft.com/en-us/windows/wsl/install-win10](https://docs.microsoft.com/en-us/windows/wsl/install-win10), Windows 10 build 16215 or later) or Cygwin (cygwin.com) and use SSH, SFTP, and SCP through there.
 
-**(5) Optional (but please, please do) - use tmux!**
+**(5) Please, please - use tmux!**
 
 It is _**highly**_ recommended to utilize one of the following SSH session management tools: `tmux` or `screen`. This would allow your remote terminal sessions to remain active even if your SSH session disconnects, intentionally or not. Below are tutorials for both:
 
@@ -174,13 +94,12 @@ Whenever you enter an SSH session, you should start or attach to a `tmux` sessio
 
 During the `bash Miniforge3.sh` and `./build-setup.sh` commands, say "yes" and press enter when prompted.
 
-The following will source the eecs151t bashrc (locating license and binary paths etc.) on startup moving forward.
-
+The following will source the eecs151t bashrc (locating license and binary paths etc.) on startup moving forward. Only `~/.bash_profile` is `source`d on shell startup on instructional machines by default.
 ```
+echo "source ~./bashrc" >> ~/.bash_profile
 echo "source /home/ff/ee198/ee198-20/.eecs151t.bashrc" >> ~/.bashrc
-source ~/.bashrc
+source ~/.bash_profile
 ```
-
 Now create your `/scratch` directory and install `conda`:
 
 ```
@@ -191,15 +110,36 @@ wget -O Miniforge3.sh \
 bash Miniforge3.sh -p "/scratch/${USER}/conda"
 ```
 
-Then, setup your repo.
+You will see the line, "For changes to take effect, close and re-open your current shell." Instead, run:
 
 ```
 source ~/.bashrc
+```
+/// L CHANGES 
+Then, setup your repo.
+This segment of commands may change for Spring 2025, ask the staff for most up to date links:
+
+```
+git clone <YOUR SSH CLONE URL> # i.e. git@github.com:ucb-eecs151tapeout/ofot-chipyard-sp25.git
+cd ofot-chipyard-sp25 # your repo name
+## Should no longer be needed:
+# git remote add skeleton https://github.com/ucb-eecs151tapeout/ofot-chipyard.git
+# git pull skeleton main
+```
+/// END L CHANGES 
+
+/// E CHANGES 
+```
 git clone git@github.com:ucb-eecs151tapeout/ofot-chipyard.git
 cd ofot-chipyard
 git checkout -b ${USER}-working # create your own branch!
 git push --set-upstream origin ${USER}-working
+```
+/// END E CHANGES 
 
+#TODO - this might also not be needed..
+
+```
 mamba install -n base conda-lock=1.4
 mamba activate base
 git config --global protocol.file.allow always
@@ -207,16 +147,31 @@ git config --global protocol.file.allow always
 
 **(7)** **Run the commands below in a `bash` terminal.**
 
-
 These next scripts may take a very long time (potentially over 32 minutes). Don't forget to `tmux`!
 
 ```
 ./build-setup.sh riscv-tools -s 8 -s 7 -s 8 -s 9 -s 10 --use-lean-conda
+```
+
+If you get errors here, you can check `build-setup.log` to confirm the issue. 
+Then check the FAQ or ask on Discord.
+
+```
 source env.sh
 ./scripts/init-vlsi.sh sky130
 ```
 
+If you see ``Setup complete!`` you're done!
+
 If you get ``Permission denied`` errors, remember to generate or copy over your SSH key as described in the Prelab.
+
+Then, run the following:
+
+```
+conda config --add channels ucb-bar
+conda config --set channel_priority strict
+mamba install firtool
+```
 
 The TL;DR of these commands is that you now have a working Chipyard environment! 
 
@@ -236,8 +191,6 @@ The TL;DR of these commands is that you now have a working Chipyard environment!
 > which defines this behavior. Read more about git submodules here.
 >
 >Feel free to look at the scripts themselves if you want to learn more.
-
-
 
 
 ### Using the environment
@@ -300,6 +253,10 @@ bash Miniforge3.sh -p "/scratch/${USER}/conda"
 source ~/.bashrc
 ```
 
+A dead giveaway is: ``ERROR:root:CondaValueError: prefix already exists: [....]/ofot-chipyard/.conda-env``
+
+In which case, make sure to delete that ``.conda-env``. 
+
 After running the above commands, go through the repo setup instructions again (you do not need to delete and re-clone the chipyard repo).
 
 #### Hanging on `configure: configuring default subproject`
@@ -326,11 +283,17 @@ You may not want to do this on your actual project as you may lose all your chan
 
 ## Your first VLSI run!
 
-From the `vlsi` folder, run:
+From the `vlsi` folder, after sourcing `env.sh` in the toplevel directory, run:
+``make drc tutorial=sky130-commercial IS_TOP_RUN=0``
+Eventually (again, make sure to run these commands in tmux so they don't get killed when you shut your laptop lid!), you should be presented with a biblical flood of output that ends with these lines:
 
-``make lvs tutorial=sky130-commercial``
+```
+Pegasus finished normally. 2025-01-30 19:19:53
+Action drc config output written to output.json
+```
 
-Don't worry too much about what it's doing right now (although you're always welcome to read through the files.) This is just to make sure your repository is setup right and you are able to invoke the tools you'll need for the class.
+This command invokes synthesis, place-and-route, and DRC checking on a simple SoC design. Don't worry too much about what it's doing right now (although you're always welcome to read through the files).
+This is just to make sure your repository is setup right and you are able to invoke the tools you'll need for the class.
 
 Don't forget to complete the Gradescope check-in, and let us know on Discord if you run into any issues!
 
