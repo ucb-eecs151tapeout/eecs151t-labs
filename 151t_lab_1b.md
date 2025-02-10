@@ -55,7 +55,7 @@ If you haven't already!
 
 Having a Bootcamp is nice, but you likely won't remember everything you did once you dig into Chipyard.. You can use the Bootcamp for reference. You can also use a much more compact [cheat sheet](https://inst.eecs.berkeley.edu/~cs250/sp17/handouts/chisel-cheatsheet3.pdf), such as:
  ![https://inst.eecs.berkeley.edu/~cs250/sp17/handouts/chisel-cheatsheet3.pdf]
-In practice, Chipyard implements a lot of unique Chisel constructs that are best learned by working on Chipyard itself. So don't stress too much about this part and feel free to move on to part B even if you don't feel like a Chisel expert!
+In practice, Chipyard implements a lot of unique Chisel constructs that are best learned by working on Chipyard itself. So don't stress too much about this part and feel free to move on even if you don't feel like a Chisel expert!
 
 ## Chisel Resources
 
