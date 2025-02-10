@@ -17,7 +17,7 @@ If you ever need more resources:
 
 We will now set up your Chipyard environment. 
 
-**(1)** **First, make a fork of our public Chipyard repo fork.** 
+**(1)** **First, make a branch of our public Chipyard repo fork.** 
 
 It will look something like: ``https://github.com/ucb-eecs151tapeout/ofot-chipyard``
 
