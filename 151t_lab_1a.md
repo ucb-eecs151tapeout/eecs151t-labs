@@ -94,10 +94,11 @@ Whenever you enter an SSH session, you should start or attach to a `tmux` sessio
 
 During the `bash Miniforge3.sh` and `./build-setup.sh` commands, say "yes" and press enter when prompted.
 
-The following will source the eecs151t bashrc (locating license and binary paths etc.) on startup moving forward.
+The following will source the eecs151t bashrc (locating license and binary paths etc.) on startup moving forward. Only `~/.bash_profile` is `source`d on shell startup on instructional machines by default.
 ```
+echo "source ~/.bashrc" >> ~/.bash_profile
 echo "source /home/ff/ee198/ee198-20/.eecs151t.bashrc" >> ~/.bashrc
-source ~/.bashrc
+source ~/.bash_profile
 ```
 Now create your `/scratch` directory and install `conda`:
 
@@ -114,34 +115,14 @@ You will see the line, "For changes to take effect, close and re-open your curre
 ```
 source ~/.bashrc
 ```
-/// L CHANGES 
+
 Then, setup your repo.
-This segment of commands may change for Spring 2025, ask the staff for most up to date links:
 
-```
-git clone <YOUR SSH CLONE URL> # i.e. git@github.com:ucb-eecs151tapeout/ofot-chipyard-sp25.git
-cd ofot-chipyard-sp25 # your repo name
-## Should no longer be needed:
-# git remote add skeleton https://github.com/ucb-eecs151tapeout/ofot-chipyard.git
-# git pull skeleton main
-```
-/// END L CHANGES 
-
-/// E CHANGES 
 ```
 git clone git@github.com:ucb-eecs151tapeout/ofot-chipyard.git
 cd ofot-chipyard
 git checkout -b ${USER}-working # create your own branch!
 git push --set-upstream origin ${USER}-working
-```
-/// END E CHANGES 
-
-#TODO - this might also not be needed..
-
-```
-mamba install -n base conda-lock=1.4
-mamba activate base
-git config --global protocol.file.allow always
 ```
 
 **(7)** **Run the commands below in a `bash` terminal.**
@@ -283,10 +264,9 @@ You may not want to do this on your actual project as you may lose all your chan
 ## Your first VLSI run!
 
 From the `vlsi` folder, after sourcing `env.sh` in the toplevel directory, run:
-
 ``make drc tutorial=sky130-commercial IS_TOP_RUN=0``
-
 Eventually (again, make sure to run these commands in tmux so they don't get killed when you shut your laptop lid!), you should be presented with a biblical flood of output that ends with these lines:
+
 ```
 Pegasus finished normally. 2025-01-30 19:19:53
 Action drc config output written to output.json

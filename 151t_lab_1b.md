@@ -80,3 +80,323 @@ A bit older - the Chisel origins:
 
 Parts of this setup are inspired by Spring 2023 Tapeout and Spring 2024 EECS251B.
 Chisel and Chipyard resources have been developed outside the course.
+
+# GradeScope Questions Addendum
+
+For the convenience of course auditors, the questions from Gradescope are listed here (but refer to Gradescope for latest versions). 
+The format is a bit ugly as markdown, apologies. 
+
+## Q1 Lab 1A: Chisel Basics
+7 Points
+ 
+Reference the Lab 1 Part A document to complete this section. It's not meant to be difficult - just motivate you to not skip the reading if you're not yet familiar with the content. Some of these answers can be found in the Bootcamp itself.
+
+### Q1.1
+1 Point
+ 
+Which of these is not an HDL?
+
+Choice 1 of 4:Verilog
+Choice 2 of 4:Chisel
+Choice 3 of 4:Scala
+Choice 4 of 4:VHDL
+
+### Q1.2
+1 Point
+ 
+Chisel is great because it enables high-level-synthesis (HLS), abstracting away micro-architectural details far away from the designer.
+
+Choice 1 of 2:True
+Choice 2 of 2:False
+
+### Q1.3
+1 Point
+ 
+Which of these are legal code snippets?
+
+Choice 1 of 1:The code snippet below me!
+ 
+```
+val a = Wire(UInt(4.W))
+a := 0
+```
+Choice 1 of 1:No, the code snippet below me!
+ 
+```
+val a = Wire(UInt(4.W))
+a := 0.U
+```
+Choice 1 of 1:Please pick me.
+ 
+```
+val bool = Wire(Bool())
+val boolean: Boolean = false
+when (bool) { ... }
+if (boolean) { ... }
+```
+Choice 1 of 1:Best for last, I promise I'm correct!
+ 
+```
+val bool = Wire(Bool())
+val boolean: Boolean = false
+if (bool) { ... }
+when (boolean) { ... }
+```
+
+### Q1.4
+1 Point
+
+Because Chisel Modules are normal Scala [A], we can use the power of Scala's constructors to [B] the elaboration of our design. This "family of modules" is referred to in Chisel as a [C].
+
+[A]:
+Choice 1 of 3:packages
+Choice 2 of 3:classes
+Choice 3 of 3:generators
+
+[B]:
+Choice 1 of 3:parametrize
+Choice 2 of 3:synthesize
+Choice 3 of 3:inherit
+
+[C]:
+Choice 1 of 3:package
+Choice 2 of 3:class
+Choice 3 of 3:generator
+
+### Q1.5
+1 Point
+ 
+The Bootcamp demonstrates how Chisel (+ Scala) enable all of these great features, except:
+
+Choice 1 of 4:Abstract classes and traits that subclasses must implement
+Choice 2 of 4:A ChiselTest verification framework vastly more comprehensive than System Verilog's
+Choice 3 of 4:Parameter passing with default values and overrides for circuit descriptions
+Choice 4 of 4:Combinational and sequential logic patterns very familiar to Verilog users
+
+### Q1.6
+1 Point
+ 
+When you execute a Chisel design, it elaborates (executes the surrounding Scala code) to construct an instance of your generator, with all Scala parameters resolved. Instead of directly emitting Verilog, Chisel emits an intermediate representation. 
+
+You don't need to know how this works, but should be aware this intermediate representation is:
+
+
+Choice 1 of 4:a VCS simulation
+Choice 2 of 4:testchipip
+Choice 3 of 4:a Chisel generator
+Choice 4 of 4:FIRRTL/CIRCT
+
+### Q1.7
+1 Point
+ 
+This intermediate representation:
+
+Choice 1 of 2:Is transformed and optimized before being compiled further to Verilog.
+Choice 2 of 2:Is a direct mapping of the Chisel to Verilog - any optimizations need to be done manually.
+
+## Q2 Lab 1B: Chisel Bootcamp Examples
+9 Points
+ 
+You don't have to test yourself on every single example in the Bootcamp and/or memorize every piece of syntax! Really. It'll be a lot easier to learn what's relevant as you delve more into Chipyard. However, you should understand enough of the Bootcamp to do these examples easily.
+
+### Q2.1 Module 1: Introduction to Scala
+1 Point
+ 
+In Scala, make a list of five Random integers, sum them using a for loop, and print the sum.
+
+###  Q2.2 Module 2.1: Your First Chisel Module
+1 Point
+ 
+Declare a Chisel class, PassthroughGenerator, which will accept an integer width construction parameter that dictates the widths of its input and output ports. The module combinationally connects in and out, so in drives out.
+
+ 
+Now instantiate a module with width 64 bits. Do not generate Verilog.
+
+### Q2.3 Module 2.2: Combinational Logic
+1 Point
+ 
+Create a Parameterized Adder that can either saturate the output when overflow occurs, or truncate the results (i.e. wrap around), by filling in the ??? below. 
+```
+class ParameterizedAdder(saturate: Boolean) extends Module {
+  val io = IO(new Bundle {
+    val in_a = Input(UInt(4.W))
+    val in_b = Input(UInt(4.W))
+    val out  = Output(UInt(4.W))
+  })
+
+  ???
+}
+```
+
+### Q2.4 Module 2.4: Sequential Logic
+1 Point
+ 
+Create a module for finding the minimum value in a sequence of inputs using conditional register assignments. (Hint: Make sure the RegInit value makes sense.. It's probably not going to be 0.U.)
+
+### Q2.5 Module 3.1: Generators: Parameters
+5 Points
+ 
+The following example shows a generator for a 1-bit input Mealy machine. This question is to ensure you are getting familiar with reading Chisel.
+```
+// Mealy machine has
+case class BinaryMealyParams(
+  // number of states
+  nStates: Int,
+  // initial state
+  s0: Int,
+  // function describing state transition
+  stateTransition: (Int, Boolean) => Int,
+  // function describing output
+  output: (Int, Boolean) => Int
+) {
+  require(nStates >= 0)
+  require(s0 < nStates && s0 >= 0)
+}
+
+class BinaryMealy(val mp: BinaryMealyParams) extends Module {
+  val io = IO(new Bundle {
+    val in = Input(Bool())
+    val out = Output(UInt())
+  })
+
+  val state = RegInit(UInt(), mp.s0.U)
+
+  // output zero if no states
+  io.out := 0.U
+  for (i <- 0 until mp.nStates) {
+    when (state === i.U) {
+      when (io.in) {
+        state  := mp.stateTransition(i, true).U
+        io.out := mp.output(i, true).U
+      }.otherwise {
+        state  := mp.stateTransition(i, false).U
+        io.out := mp.output(i, false).U
+      }
+    }
+  }
+}
+
+// example from https://en.wikipedia.org/wiki/Mealy_machine
+val nStates = 3
+val s0 = 2
+def stateTransition(state: Int, in: Boolean): Int = {
+  if (in) {
+    1
+  } else {
+    0
+  }
+}
+def output(state: Int, in: Boolean): Int = {
+  if (state == 2) {
+    return 0
+  }
+  if ((state == 1 && !in) || (state == 0 && in)) {
+    return 1
+  } else {
+    return 0
+  }
+}
+
+val testParams = BinaryMealyParams(nStates, s0, stateTransition, output)
+Let's go through this Mealy machine step by step.
+
+(1) What is the purpose of BinaryMealyParams? Why does it exist and what does it do?
+
+// Mealy machine has
+case class BinaryMealyParams(
+  // number of states
+  nStates: Int,
+  // initial state
+  s0: Int,
+  // function describing state transition
+  stateTransition: (Int, Boolean) => Int,
+  // function describing output
+  output: (Int, Boolean) => Int
+) {
+  require(nStates >= 0)
+  require(s0 < nStates && s0 >= 0)
+}
+```
+
+(2) Describe (in 1-2 sentences) what BinaryMealy is doing. What does the output depend on?
+
+```
+class BinaryMealy(val mp: BinaryMealyParams) extends Module {
+  val io = IO(new Bundle {
+    val in = Input(Bool())
+    val out = Output(UInt())
+  })
+
+  val state = RegInit(UInt(), mp.s0.U)
+
+  // output zero if no states
+  io.out := 0.U
+  for (i <- 0 until mp.nStates) {
+    when (state === i.U) {
+      when (io.in) {
+        state  := mp.stateTransition(i, true).U
+        io.out := mp.output(i, true).U
+      }.otherwise {
+        state  := mp.stateTransition(i, false).U
+        io.out := mp.output(i, false).U
+      }
+    }
+  }
+}
+```
+
+ 
+(3) What are stateTransition and output examples of? Why are they here?
+
+```
+// example from https://en.wikipedia.org/wiki/Mealy_machine
+val nStates = 3
+val s0 = 2
+def stateTransition(state: Int, in: Boolean): Int = {
+  if (in) {
+    1
+  } else {
+    0
+  }
+}
+def output(state: Int, in: Boolean): Int = {
+  if (state == 2) {
+    return 0
+  }
+  if ((state == 1 && !in) || (state == 0 && in)) {
+    return 1
+  } else {
+    return 0
+  }
+}
+```
+
+ 
+(4) Is testParams a mutable or immutable construct?
+
+```
+val testParams = BinaryMealyParams(nStates, s0, stateTransition, output)
+```
+
+Choice 1 of 2:Mutable
+Choice 2 of 2:Immutable
+
+ 
+(5) How do you use testParams to instantiate a new Binary Mealy machine?
+
+## Q3 Lab 1A: Chisel Feedback
+0 Points
+ 
+How much time did the Chisel Bootcamp take you?
+
+Choice 1 of 3:I need way more time, this is way too long!
+Choice 2 of 3:About how much I'd expect for a bootcamp lab.
+Choice 3 of 3:Oh lol, I got through it at lightning speed.
+
+Was the content useful and accessible?
+
+Choice 1 of 3:This is way too dense and difficult!
+Choice 2 of 3:Yeah, maybe not 100% but I got what I needed.
+Choice 3 of 3:Oh lol, I already know Chisel.
+
+Feel free to jot down any comments or feedback here.
