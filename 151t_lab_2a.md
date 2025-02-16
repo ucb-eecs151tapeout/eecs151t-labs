@@ -4,7 +4,7 @@
 
 In Lab 1, you learned Chisel and (probably) blindly went through Chipyard setup. We talked a little bit about Chisel, VLSI flows, and Chipyard in lecture one, and then dug a bit deeper into SoC design and Rocket Chip in lecture two, particularly focusing on the SoC component hopefully most familiar to you from EECS151LA - the RISC-V core. You no doubt still have many questions - that's okay! Hopefully our meet-ups will ease you into this chaotic infrastructure smoothly, but please do let us know when you encounter bugs or confusion. Now, we would like to start the process of integrating your own core into the brand new SoC. 
 
-### Chipyard & Rocket Chip Overview
+## Part 0) Chipyard & Rocket Chip Overview
 
 So, we've asked you to setup Chipyard. What in the world did we make you clone?! In this lab, we will use the [Chipyard](https://github.com/ucb-bar/chipyard) framework a bit more, but don't worry about it much yet. As you read the documentation, you will see many diagrams, such as the one below, each of which seems to have more and more new components. Again, don't worry about trying to explore everything at once. For now, try to go through the excercises to get practical Chipyard experience. You will dig into Chipyard components much more later. 
 
@@ -24,7 +24,13 @@ There is a lot in Chipyard so we will only be able to explore a part of it in th
 
 Note that while we talked about the *Rocket Chip* ecosystem in lecture, *Chipyard* (the name) is often used near interchangeably, and we will say *Chipyard* from now on. 
 
-## Getting your CPU into Chipyard!
+**Step 0: Answer a few basic questions!**
+
+- [Gradescope] Describe Chipyard in your own words (one sentence is ok).
+
+- [Gradescope] In Chipyard, (A) is a type of (B) and contains a (C). If it has our Verilog CPU instead, it is technically no longer (A), but is useful to learn because it looks very similar. Regardless, all of this is part of (D).
+
+## Part 1) Getting your CPU into Chipyard!
 
 ### Import Your CPU
 
@@ -132,7 +138,7 @@ You can check the Makefile to figure out where the combined verilog file gets pl
 
 Congratulations! Your core is now one step closer to integration. But the resulting file is still Verilog. How do we turn it into Scala?
 
-## Chisel Black Box Integration
+## Part 2) Chisel Black Box Integration
 
 We will now explore how the magic adapter finds and hooks up your core!
 
