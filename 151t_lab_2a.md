@@ -1,4 +1,4 @@
-# Lab 2a: Creating your RISC-V Core Generator
+# Lab 2a) Creating your RISC-V Core Generator
 
 ## Summary So Far
 
@@ -132,7 +132,7 @@ You can check the Makefile to figure out where the combined verilog file gets pl
 
 Congratulations! Your core is now one step closer to integration. But the resulting file is still Verilog. How do we turn it into Scala?
 
-### Chisel Black Box Integration
+## Chisel Black Box Integration
 
 We will now explore how the magic adapter finds and hooks up your core!
 
@@ -159,13 +159,13 @@ Read through **6.11.2. Defining a Chisel BlackBox** onwards - these are the step
 
 Copied here for auditors. Check Gradescope for latest versions.
 
-At a high level:
+**At a high level:**
 
 - [Gradescope] Select all the possible reasons why can't we submodule your (Verilog) EECS151LA core as a Chipyard generator directly. 
 
 - [Gradescope] Which of the following are real steps for integrating a Verilog peripheral into Chipyard (be it your core, or another side project you might create in Verilog)?
 
-The black box:
+**The black box:**
 
 - [Gradescope] Give us the one line of Chisel that actually instantiates your Verilog.
 
@@ -177,7 +177,7 @@ The black box:
 
 - [Gradescope] Which parameter would you override if you were to extend your core with a Floating Point Unit and support the "F" (single-precision floating-point) extension of the RISC-V ISA? (Note: you can read ahead to `6.4.2. Create Parameter Case Classes` to understand where some of these "Rocket-specific" core params come from.)
 
-Initial glance at the interface:
+**Initial glance at the interface:**
 
 - [Gradescope] What Chisel signals and datatypes are your EECS151 memory interface DATA VALID and DATA READY signals mapped to? (Note: recall an `io` field is a bundle with fields corresponding to the portlist of the Verilog module.) Which line(s) tell you so?
 
