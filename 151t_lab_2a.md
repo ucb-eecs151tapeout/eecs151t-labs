@@ -8,7 +8,7 @@ In Lab 1, you learned Chisel and (probably) blindly went through Chipyard setup.
 
 So, we've asked you to setup Chipyard. What in the world did we make you clone?! In this lab, we will use the [Chipyard](https://github.com/ucb-bar/chipyard) framework a bit more, but don't worry about it much yet. As you read the documentation, you will see many diagrams, such as the one below, each of which seems to have more and more new components. Again, don't worry about trying to explore everything at once. For now, try to go through the excercises to get practical Chipyard experience. You will dig into Chipyard components much more later. 
 
-![](Lab_2_assets/chipyard-flow.png)
+![](Lab_2a_assets/chipyard-flow.png)
 
 **To start - what is Chipyard?**
 
@@ -199,4 +199,4 @@ To reiterate, we are aware that not everyone finished the EECS151LA project 100%
 
 # Credits
 
-(_This segment partially borrows from the Spring 2023 Tapeout Lab 2, particularly the writings of Jerry Zhao._)
+The Chipyard introduction segment partially borrows from the Spring 2023 Tapeout Lab 2, particularly the writings of Jerry Zhao.
