@@ -13,7 +13,7 @@ If you ever need more resources:
  - Chipyard Documentation: [https://chipyard.readthedocs.io/](https://chipyard.readthedocs.io/)
 - Chipyard Basics slides: [https://fires.im/asplos23-slides-pdf/02_chipyard_basics.pdf](https://fires.im/asplos23-slides-pdf/02_chipyard_basics.pdf)
 
-## Chipyard Setup
+## Chipyard Setup [EDA Machines]
 
 We will now set up your Chipyard environment. 
 
@@ -260,6 +260,302 @@ When in doubt, for the sake of this lab, you can reset to the baseline with:
 ``git reset —hard origin/main``
 
 You may not want to do this on your actual project as you may lose all your changes. But this Chipyard setup is just practice!
+
+## Chipyard Setup [Local on Apple Silicon (ARM) Machines]
+
+Follow instructions here if you do not have an instructional account (`ee198-20-xxx` account).
+
+Tl;Dr: We will setup Ubuntu 24.04 LTS via Qemu on your ARM machines where you can install Chipyard in. The following instructions will be for Apple Silicon devices but the gist applies for any other ARM based device.
+
+**Two definitions to make our lives easier:**
+1. **Host machine (or "Host")** = Your Mac/Machine that you will be running the Virtual Machine on
+2. **Guest machine (or "Guest")** = The virtual machine that is running Ubuntu 24.04 LTS
+
+**(1)** **Install UTM or Qemu & Ubuntu 24.04 LTS ISO** 
+
+For UTM: https://mac.getutm.app/ - Use the "Download" button on the website as the Apple Store download requires you to pay. Downloading via the website is free. 
+
+Install UTM as you would install any Mac app.
+
+> Note: UTM is just a Qemu wrapper and is fully open source. If you prefer, you can install Qemu directly via the command line.
+
+For Ubuntu 24.04 LTS: https://ubuntu.com/download/server and download **Ubuntu Server 24.04.xx LTS** (the `xx` can be any number).
+
+**(2) Install Ubuntu 24.04 LTS on UTM/Qemu**
+
+1. Click "Create a New Virtual Machine"
+2. Choose **Emulate** since we will be running an x86 machine on ARM
+3. Choose "Linux"
+4. Select the location of your Ubuntu ISO under "Boot ISO Image" - Leave all other settings on this page alone
+5. On the "Hardware" settings page, make sure you have the following:
+
+    * Architecture: x86_64
+    * System: Standard PC (Q35 + ICH9, 2009) (alias of pc-q35-9.1) (q35)
+    * Memory: 4096 MiB (Can be changed depending on your Host machine specs)
+    * CPU/CPU Cores: 4 (Can be changed depending on your Host machine specs)
+    * Hardware OpenGL Acceleration: Leave **UNCHECKED**
+
+6. On the "Storage" settings page, set "Specify the size of the drive where data will be stored into." to **64 GiB** - (Can be changed depending on your Host machine specs)
+<!-- TODO: @elam/lucy: How much storage will a full tapeout require? -->
+
+7. On the "Shared Directory" page, **leave all settings as is**. 
+
+8. Your "Summary" page should look like the following:
+
+<p align="center">
+<img src="./Lab1a_assets/UTM_Summary.png" style="width: 40%; height: 40%">
+</p>
+
+9. If everything looks good, click "Save". **BUT DO NOT BOOT/CLICK THE PLAY BUTTON YOUR MACHINE AFTER SAVING.**
+
+**(3) Edit VM Settings (Round 1: Before First Boot)**
+
+* Go to the VM settings page towards the right of the top bar - shown below:
+
+<p align="center">
+    <img src="./Lab1a_assets/edit-selected-vm-location.png"></img>
+</p>
+
+* Go to "Network" under the "Devices" Tab on the left
+* Set "Network Mode" to "Bridged (Advanced)"
+* Check "Show Advanced Settings"
+* Then Check "Isolate Guest from Host"
+* Leave everything else alone - including the MAC address
+* Click "Save"
+
+> *Note: What did we do here? And Why?* 
+> 
+> We are telling Qemu to set up our Guest as a completely separate device that, from the network perspective, is completely unrelated to our Host Machine. This will allow the Guest to acquire its own IP on the network via DHCP. Typically, one downside of Qemu is how tricky it is to access the public/outside Internet in a Guest device, this often results in a situation where either ICMP (and therefore `wget` -- needed for Chipyard) does not work, or TCP/UDP doesn't work (unless you do additional configuration on the Host machine in conjunction with the Guest machine). The setting we applied makes all these problems go away by making it so that from your internet provider's perspective, you have set up a new, physical, computer on the network. If you are curious, read more [here](https://wiki.qemu.org/Documentation/Networking) and [here](https://docs.getutm.app/settings-qemu/devices/network/network/#network-mode).
+
+**(4) Boot & Install Linux**
+
+* Select "Try of Install Ubuntu Server" on the GRUB Bootloader Screen.
+* Once you get put into the screen to select your language (might take a while), select your desired language. For the purpose of this tutorial, we will use English.
+* Go through the typical Linux install process - a couple things of note:
+    * **Don't** install "Ubuntu Server (minimized)"
+    * On the storage configuration page, **uncheck** "Set up this disk as an LVM group" - This is mainly a quality of life change, if you want to use LVM, feel free - but the following instructions will assume you have unchecked LVM.
+    * **Install** OpenSSH Server - Don't worry about importing an SSH key for now.
+* After installation & during reboot, you will be prompted to remove the installation medium. Go to the UTM app and with the VM selected on the left, scroll down on towards the bottom on the right. You will see a "CD/DVD" dropdown. Open the dropdown and click "Clear".
+* After doing this, go back to your Serial Console, hit the enter key.
+* After you get booted into Linux, make sure you can log in, then shutdown the machine.
+
+> Note: If you cannot get network access during the installer
+> 
+> Go back to step 3, and change "Bridged Interface" in the Network settings to en0 or your default network interface on your Host machine. - You can check your default network interface on your host machine via the `ifconfig` command in your Host machine's terminal. Choose a network interface that has a `inet` address and show `status: active`.
+
+**(5) Edit VM Settings (Round 2: After Install)**
+
+* Go back to the VM settings page (Click on "Edit selected VM")
+* Under the left bar, go to "QEMU", then select "Arguments". Scroll to the bottom.
+* Do the following in order:
+    1. Click "New" 
+    2. Enter `-netdev`
+    3. Click "New"
+    4. Enter `vmnet-shared,id=net1`
+    5. Click "New"
+    6. Enter `-device`
+    7. Click "New"
+    8. Enter `e1000,netdev=net1`
+    9. Click "New" - This step is **required!**
+* Save & Boot the VM
+
+**(6) Configure Guest IP Settings after Boot for SSH**
+
+* After logging in, run `ip a`. You should see something like the following:
+    ```
+    ofo@ofo:~$ ip a
+    1: lo: ‹LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+        link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+        inet 127.0.0.1/8 scope host lo
+            valid_lft forever preferred_lft forever
+        inet6 ::1/128 scope host noprefixroute
+            valid_lft forever preferred_lft forever
+    2: enp0s1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc tq_codel state UP group default qlen 1000
+        link/ether a2:b5:c2:87:87:e1 brd ff:ff:ff:ff:ff:ff
+        inet 10.41.136.246/22 metric 100 bro 10.41.139.255 scope global dynamic enp0s1
+            valid_lft 887sec preferred_lft 887sec
+        inet6 fe80::a0b5:c2ff:fe87:87e1/64 scope link
+            valid_lft forever preferred_lft forever
+    3: enp0s7 ‹BROADCAST, MULTICAST> mtu 1500 qdisc noop state DOWN group default qlen 1000
+        link/ether 52:54:00:12:34:56 brd ff:ff:ff:ff:ff:ff
+    ```
+* As long as we see a 3rd network interface (in this case: `enp0s7`), we are good to go. **From now on, replace `enp0s7` with what your specific network interface name.**
+
+* Run: `sudo vim /etc/netplan/50-cloud-init.yaml`. In the YAML file, add the last section (starting at `enp0s7`) so that your file looks like the following:
+    <!-- ```
+    sudo ip link set enp0s7 up
+    sudo systemctl restart systemd-networkd
+    sudo ip addr add 192.168.64.2/24 dev enp0s7
+    sudo ip link set enp0s7 up
+    ``` -->
+    ```yaml
+    network:
+      version: 2
+      ethernets:
+        enp0s1: # name here will be your 2nd network interface (first non loopback interface) name - this should be there already
+          dhcp4: true
+        enp0s7: # the content from this line to the end should be what you add
+          dhcp4: false
+          addresses: 
+            - 192.168.64.2/24
+    ```
+
+* Save the file, then run `sudo netplan generate`. Make sure the terminal doesn't return any errors.
+* Run `sudo netplan apply`
+* Run `ip a`. Your 3rd (`enp0s7`) network interface should look like this:
+    ```
+    3: enp0s7: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 52:54:00:12:34:56 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.64.2/24 brd 192.168.64.255 scope global enp0s7
+       valid_lft forever preferred_lft forever
+    ```
+
+> *Note: Why did we do this?*
+> 
+> Read the note in step (3) for context.
+> We have fixed the problem of getting our Guest machine Internet access but now how do we access the Guest machine from our Host Machine? We could just do everything through the window that UTM gives us, but we want to use SSH and our Host computer's shell because that's a much nicer user experience (Copy paste 🖌️, colors 🎨, etc etc...). But recall we set our machine up like a "new computer" to the network. Under this model, we need the IP of our device on the network to SSH - But since we are using DHCP, this address changes once in a while, killing our SSH session randomly. Also, some networks (such as eduroam) won't allow you to SSH into other devices on the network. What we did in step (5) & (6) was create a Local Area Network (LAN) on your Host that includes your Host & Guest machine, then created new network interfaces on Host & Guest to talk on this LAN. This then allows you to have a local, direct line from your Host machine to your Guest machine via SSH. If you go to your Host machine and ping `192.168.64.2`, you will notice 1-2ms ping time.
+
+
+**(7) Reboot, SSH, Patch .bashrc Files**
+
+* At this point, you can reboot Guest. 
+* Once the Guest reboots, you can minimize the UTM window showing you the console and SSH into your machine using `ssh <username>@192.168.64.2` on your Host machine.
+* Run the following commands:
+    ```
+    touch ~/.eecs151t.bashrc
+    vim .eecs151t.bashrc
+    ```
+* Write the following to the new file and then save
+    <!-- TODO: @elam/lucy: do we need contents in /home/ff/eecs251b/tools/install/bin/? - Will not accessible on VM -->
+    ```
+    # add paths
+    export PATH=$PATH:/home/ff/eecs251b/tools/install/bin/
+    export LM_LICENSE_FILE=<REDACTED>.eecs.berkeley.edu:<REDACTED>.eecs.berkeley.edu:<REDACTED>.eecs.berkeley.edu
+    ```
+    * If you are a current 151T student, reach out on the Discord for the `REDACTED` parts.
+
+**(8) Please, please - use tmux!**
+
+It is _**highly**_ recommended to utilize one of the following SSH session management tools: `tmux` or `screen`. This would allow your remote terminal sessions to remain active even if your SSH session disconnects, intentionally or not. Below are tutorials for both:
+
+- [Tmux Tutorial](https://www.hamvocke.com/blog/a-quick-and-easy-guide-to-tmux/)
+- [Screen Tutorial](https://www.rackaid.com/blog/linux-screen-tutorial-and-how-to/)
+
+> [!WARNING]
+> If you run commands in a "raw" (without `nohup` or `tmux`) SSH terminal, they will be killed when you exit your session (or if your wifi goes out for a few seconds).
+> 
+> To use [`tmux`](https://tmuxcheatsheet.com/), you can add `RemoteCommand tmux new -A -s ssh` to your ssh config for your instructional account or run `tmux new-s -t <name>` once you log in. (Reference the tutorial above if you're confused.)
+> 
+> You can also run a command `cmd` as `nohup cmd` to prevent the command from being killed if the session exits, but this is less convenient.
+> 
+> If you manually created a `tmux` session, you must reattach to it manually the next time you log in with `tmux a -t <name>`.
+
+Whenever you enter an SSH session, you should start or attach to a `tmux` session. 
+
+**(9)** **Run the commands below in a `bash` terminal.**
+
+During the `bash Miniforge3.sh` and `./build-setup.sh` commands, say "yes" and press enter when prompted.
+
+The following will source the eecs151t bashrc (locating license and binary paths etc.) on startup moving forward. Only `~/.bash_profile` is `source`d on shell startup on instructional machines by default.
+```
+echo "source ~/.bashrc" >> ~/.bash_profile
+echo "source ~/.eecs151t.bashrc" >> ~/.bashrc
+source ~/.bash_profile
+```
+Now create your `/scratch` directory and install `conda`:
+
+```
+mkdir -m 0700 -p /scratch/$USER
+cd /scratch/$USER
+wget -O Miniforge3.sh \
+"https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
+bash Miniforge3.sh -p "/scratch/${USER}/conda"
+```
+
+You will see the line, "For changes to take effect, close and re-open your current shell." Instead, run:
+
+```
+source ~/.bashrc
+```
+
+Then, setup your repo.
+
+```
+git clone git@github.com:ucb-eecs151tapeout/ofot-chipyard.git
+cd ofot-chipyard
+git checkout -b ${USER}-working # create your own branch!
+git push --set-upstream origin ${USER}-working
+```
+
+**(10)** **Run the commands below in a `bash` terminal.**
+
+These next scripts may take a very long time (potentially over 32 minutes). Don't forget to `tmux`!
+
+```
+./build-setup.sh riscv-tools -s 8 -s 7 -s 8 -s 9 -s 10 --use-lean-conda
+```
+
+If you get errors here, you can check `build-setup.log` to confirm the issue. 
+Then check the FAQ or ask on Discord.
+
+```
+source env.sh
+./scripts/init-vlsi.sh sky130
+```
+
+If you see ``Setup complete!`` you're done!
+
+If you get ``Permission denied`` errors, remember to generate or copy over your SSH key as described in the Prelab.
+
+Then, run the following:
+
+```
+conda config --add channels ucb-bar
+conda config --set channel_priority strict
+mamba install firtool
+```
+
+The TL;DR of these commands is that you now have a working Chipyard environment! 
+
+> [!TIP]
+> More specifically, these scripts are responsible for setting up the tools and environment used by the course.
+> 
+> - Conda is an open-source package and environment management system that allows you to quickly install, run, and update packages and their dependencies. In other words, conda allows users to create an environment that holds system dependencies like make, gcc, etc. We need to activate this conda environment.
+> - We use commercial tools such as VCS from a common installation location. We add this location to the path and source relevant licenses.
+>
+> The shell script will initialize and checkout all of the necessary git submodules. When updating Chipyard to a new version, you will also want to rerun this script to update the submodules. Using git directly will try to initialize all submodules; this is not recommended unless you expressly desire this behavior.
+>
+> git submodules allow you to keep other Git repositories as subdirectories of another Git repository. For example, the above script initiates the rocket-chip submodule which is its own Git repository that you can look at here. If you look at the .gitmodules file at top-level chipyard, you can see
+>
+> [submodule "rocket-chip"]
+>	path = generators/rocket-chip
+>	url = https://github.com/chipsalliance/rocket-chip.git
+> which defines this behavior. Read more about git submodules here.
+>
+>Feel free to look at the scripts themselves if you want to learn more.
+
+
+### Using the environment
+
+To enter your Chipyard environment, you will need to run the following command in each terminal session you open (including new `tmux` sessions).
+
+```
+source /scratch/$USER/ofot-chipyard/env.sh
+```
+
+This env.sh file should exist in the top-level repository. This file sets up necessary environment variables such as PATH for the current Chipyard repository. This is required by future Chipyard steps such as the make system to function correctly.
+
+
+> [!TIP]
+> If you would like to run this automatically on terminal startup, you can add the command to your `~/.bashrc`
+> by running the following:
+>
+> ```
+> echo "source /scratch/$USER/ofot-chipyard/env.sh" >> ~/.bashrc
+> ```
+
+Optionally, you can also set the repo path as an environment variable by running `export wd=/scratch/$USER/ofot-chipyard` and then jump to it with `cd $wd`.
+Note that `export` only lasts until you close the terminal session, add a command to `~/.bashrc` to have it run every time you start a new commandline session!
 
 ## Your first VLSI run!
 
