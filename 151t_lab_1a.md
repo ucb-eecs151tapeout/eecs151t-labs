@@ -269,7 +269,7 @@ Tl;Dr: We will setup Ubuntu 24.04 LTS via Qemu on your ARM machines where you ca
 
 **Two definitions to make our lives easier:**
 1. **Host machine (or "Host")** = Your Mac/Machine that you will be running the Virtual Machine on
-2. **Guest machine (or "Guest")** = The virtual machine that is running Ubuntu 24.04 LTS
+2. **Guest machine (or "Guest")** = The virtual machine (VM) that is running Ubuntu 24.04 LTS
 
 **(1)** **Install UTM or Qemu & Ubuntu 24.04 LTS ISO** 
 
@@ -277,7 +277,7 @@ For UTM: https://mac.getutm.app/ - Use the "Download" button on the website as t
 
 Install UTM as you would install any Mac app.
 
-> Note: UTM is just a Qemu wrapper and is fully open source. If you prefer, you can install Qemu directly via the command line.
+> Note: UTM is just a Qemu wrapper/GUI and is fully open source. If you prefer, you can install Qemu directly via the command line.
 
 For Ubuntu 24.04 LTS: https://ubuntu.com/download/server and download **Ubuntu Server 24.04.xx LTS** (the `xx` can be any number).
 
@@ -379,7 +379,7 @@ For Ubuntu 24.04 LTS: https://ubuntu.com/download/server and download **Ubuntu S
     3: enp0s7 ‹BROADCAST, MULTICAST> mtu 1500 qdisc noop state DOWN group default qlen 1000
         link/ether 52:54:00:12:34:56 brd ff:ff:ff:ff:ff:ff
     ```
-* As long as we see a 3rd network interface (in this case: `enp0s7`), we are good to go. **From now on, replace `enp0s7` with what your specific network interface name.**
+* As long as we see a 3rd network interface (in this case: `enp0s7`), we are good to go. **From now on, replace `enp0s7` with your specific network interface name.**
 
 * Run: `sudo vim /etc/netplan/50-cloud-init.yaml`. In the YAML file, add the last section (starting at `enp0s7`) so that your file looks like the following:
     <!-- ```
@@ -413,6 +413,7 @@ For Ubuntu 24.04 LTS: https://ubuntu.com/download/server and download **Ubuntu S
 > *Note: Why did we do this?*
 > 
 > Read the note in step (3) for context.
+>
 > We have fixed the problem of getting our Guest machine Internet access but now how do we access the Guest machine from our Host Machine? We could just do everything through the window that UTM gives us, but we want to use SSH and our Host computer's shell because that's a much nicer user experience (Copy paste 🖌️, colors 🎨, etc etc...). But recall we set our machine up like a "new computer" to the network. Under this model, we need the IP of our device on the network to SSH - But since we are using DHCP, this address changes once in a while, killing our SSH session randomly. Also, some networks (such as eduroam) won't allow you to SSH into other devices on the network. What we did in step (5) & (6) was create a Local Area Network (LAN) on your Host that includes your Host & Guest machine, then created new network interfaces on Host & Guest to talk on this LAN. This then allows you to have a local, direct line from your Host machine to your Guest machine via SSH. If you go to your Host machine and ping `192.168.64.2`, you will notice 1-2ms ping time.
 
 
@@ -465,7 +466,7 @@ source ~/.bash_profile
 Now create your `/scratch` directory and install `conda`:
 
 ```
-mkdir -m 0700 -p /scratch/$USER
+sudo mkdir -m 0777 -p /scratch/$USER
 cd /scratch/$USER
 wget -O Miniforge3.sh \
 "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
