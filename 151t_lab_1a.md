@@ -195,72 +195,6 @@ This env.sh file should exist in the top-level repository. This file sets up nec
 Optionally, you can also set the repo path as an environment variable by running `export wd=/scratch/$USER/ofot-chipyard` and then jump to it with `cd $wd`.
 Note that `export` only lasts until you close the terminal session, add a command to `~/.bashrc` to have it run every time you start a new commandline session!
 
-### Common issues
-
-If you completed the setup successfully, you can skip this section.
-
-#### `hammer-mentor-plugins`-related errors
-
-These should've been removed from this version of Chipyard, as `hammer-mentor-plugins` is a private repository. If you run into bugs, particularly during the `init-vlsi.sh` step, let us know.
-
-You can also try fixing the problem yourself by doing the following..
-
-Edit the init-vlsi.sh script, such as with vim:
-
-`vim ./scripts/init-vlsi.sh`
-
-Comment out the line:
-
-`git submodule update --init --recursive vlsi/hammer`
-
-Which with vim, can be done with `i` (insert) mode then `:wq` (write then quit) once you're done.
-
-Rerun: `./scripts/init-vlsi.sh sky130`
-
-For context, the reason for this error is that we do not have a local copy of `hammer-mentor-plugins` setup and `mentor` is not an open source tool, so the online repo is private. The script tries to pull from the private repo to update the submodule and can't find it. But we're not using that tool, so we can skip it.
-
-
-#### `build-setup` transaction failed
-
-If you observe that the `conda` install transaction failed, which is often caused by stopping `./build-setup` prematurely, you will likely need to reinstall conda. To do so, reinstall `conda` by running the following commands:
-
-```bash
-cd /scratch/$USER/<semester>-chipyard-<uname>
-rm -rf .conda-env
-cd ..
-rm -rf conda
-bash Miniforge3.sh -p "/scratch/${USER}/conda"
-source ~/.bashrc
-```
-
-A dead giveaway is: ``ERROR:root:CondaValueError: prefix already exists: [....]/ofot-chipyard/.conda-env``
-
-In which case, make sure to delete that ``.conda-env``. 
-
-After running the above commands, go through the repo setup instructions again (you do not need to delete and re-clone the chipyard repo).
-
-#### Hanging on `configure: configuring default subproject`
-
-This might happen if you try to run the installation without `unset`ing the `CONFIG_SHELL` environment variable.
-To resolve it, run the following from the Chipyard root directory:
-
-```
-unset CONFIG_SHELL
-source env.sh
-./build-setup.sh riscv-tools -s 1 -s 2 -s 6 -s 7 -s 8 -s 9 -s 10 
-```
-
-This skips the steps that have already completed prior to the failure and retries the failed step.
-Proceed as usual after the command succeeds.
-
-#### Repository Issues (like `divergent branches`)
-
-When in doubt, for the sake of this lab, you can reset to the baseline with:
-
-``git reset —hard origin/main``
-
-You may not want to do this on your actual project as you may lose all your changes. But this Chipyard setup is just practice!
-
 ## Chipyard Setup [Local on Apple Silicon (ARM) Machines]
 
 Follow instructions here if you do not have an instructional account (`ee198-20-xxx` account).
@@ -433,7 +367,9 @@ For Ubuntu 24.04 LTS: https://ubuntu.com/download/server and download **Ubuntu S
     export PATH=$PATH:/home/ff/eecs251b/tools/install/bin/
     export LM_LICENSE_FILE=<REDACTED>.eecs.berkeley.edu:<REDACTED>.eecs.berkeley.edu:<REDACTED>.eecs.berkeley.edu
     ```
-    * If you are a current 151T student, reach out on the Discord for the `REDACTED` parts.
+    * If you are a current 151T student or affiliated with Berkeley, reach out on the Discord for the `REDACTED` parts.
+    * If you are not affiliated with Berkeley, you need to set the LM_LICENSE_FILE variable to point to your Siemens Mentor EDA license file or licensing server. You can typically talk to your institution's IT department to see if they have purchased a license.
+        * If you do not have a Siemens Mentor EDA license, you can consider using the OpenROAD RTL-to-GDS flow. The guide for that is [here](https://chipyard.readthedocs.io/en/latest/VLSI/Sky130-OpenROAD-Tutorial.html), however this flow can be more buggy than the Commercial flow (Siemens EDA flow).
 
 **(8) Please, please - use tmux!**
 
@@ -557,6 +493,98 @@ This env.sh file should exist in the top-level repository. This file sets up nec
 
 Optionally, you can also set the repo path as an environment variable by running `export wd=/scratch/$USER/ofot-chipyard` and then jump to it with `cd $wd`.
 Note that `export` only lasts until you close the terminal session, add a command to `~/.bashrc` to have it run every time you start a new commandline session!
+
+
+## Common setup issues (FAQ)
+
+If you completed the setup successfully, you can skip this section.
+
+### `hammer-mentor-plugins`-related errors
+
+These should've been removed from this version of Chipyard, as `hammer-mentor-plugins` is a private repository. If you run into bugs, particularly during the `init-vlsi.sh` step, let us know.
+
+You can also try fixing the problem yourself by doing the following..
+
+Edit the init-vlsi.sh script, such as with vim:
+
+`vim ./scripts/init-vlsi.sh`
+
+Comment out the line:
+
+`git submodule update --init --recursive vlsi/hammer`
+
+Which with vim, can be done with `i` (insert) mode then `:wq` (write then quit) once you're done.
+
+Rerun: `./scripts/init-vlsi.sh sky130`
+
+For context, the reason for this error is that we do not have a local copy of `hammer-mentor-plugins` setup and `mentor` is not an open source tool, so the online repo is private. The script tries to pull from the private repo to update the submodule and can't find it. But we're not using that tool, so we can skip it.
+
+
+### `build-setup` transaction failed
+
+If you observe that the `conda` install transaction failed, which is often caused by stopping `./build-setup` prematurely, you will likely need to reinstall conda. To do so, reinstall `conda` by running the following commands:
+
+```bash
+cd /scratch/$USER/<semester>-chipyard-<uname>
+rm -rf .conda-env
+cd ..
+rm -rf conda
+bash Miniforge3.sh -p "/scratch/${USER}/conda"
+source ~/.bashrc
+```
+
+A dead giveaway is: ``ERROR:root:CondaValueError: prefix already exists: [....]/ofot-chipyard/.conda-env``
+
+In which case, make sure to delete that ``.conda-env``. 
+
+After running the above commands, go through the repo setup instructions again (you do not need to delete and re-clone the chipyard repo).
+
+### Hanging on `configure: configuring default subproject`
+
+This might happen if you try to run the installation without `unset`ing the `CONFIG_SHELL` environment variable.
+To resolve it, run the following from the Chipyard root directory:
+
+```
+unset CONFIG_SHELL
+source env.sh
+./build-setup.sh riscv-tools -s 1 -s 2 -s 6 -s 7 -s 8 -s 9 -s 10 
+```
+
+This skips the steps that have already completed prior to the failure and retries the failed step.
+Proceed as usual after the command succeeds.
+
+### Repository Issues (like `divergent branches`)
+
+When in doubt, for the sake of this lab, you can reset to the baseline with:
+
+``git reset —hard origin/main``
+
+You may not want to do this on your actual project as you may lose all your changes. But this Chipyard setup is just practice!
+
+### Java Runtime `SIGSEGV` Error - Make fails at `common.mk:409: launch-sbt` of Step 5 of build-setup
+
+This error should only happen if you are running an x86 Linux VM on Apple Silicon.
+
+Make sure you have pulled the latest version of the OFOT-Chipyard repository. If you have, check `build.sbt` in the `ofot-chipyard` folder and search for `UseZGC`. If it doesn't exist, notify your instructor.
+
+For an immediate fix, edit your VM settings to use only **1 core**. This will result in an extremely slow build, but it will build.
+
+Instructors: This should've either been fixed (by Apple) or been patched in the Class CY or upstream CY. If none of the above has happened, you need to go into `build.sbt` and add `-XX:-UseG1GC -XX:+UseZGC` flags to use during Scala Build.
+
+<details open>
+<summary> If you are curious as to why this happens, open the dropdown </summary>
+<br>
+(TL;DR: java G1 garbage collector makes apple's virtualization infra angry, we need to force java to use another garbage collector)
+
+A hypothesis is that this is a problem with how rosetta handles blippy pauses in application thread execution or some unsupported instruction in the G1 garbage collector  
+
+The G1 garbage collector (which the flag is saying not to use) is a mostly concurrent collector which will pause program execution to "catch up" with the program ([Reference](https://stackoverflow.com/questions/6454201/whats-the-mostly-concurrent-garbage-collector)) - since this collector is designed to meet certain pause-time goals (max # of secs the main executing thread can pause), my guess is it'll have relatively frequent pauses & unpauses of the main executing thread (our build) - this might make Rosetta unhappy // or G1 just has a particular call that Rosetta doesn't like.
+
+*Why does single core machine fix this?* - if you run `java -XX:+PrintCommandLineFlags -version` ([Reference](https://stackoverflow.com/questions/5024959/find-which-type-of-garbage-collector-is-running)) it prints the garbage collector java currently uses -- on the single core machine, java by default selects `-XX:+UseSerialGC` - this GC has no pause-time requirements - and without this req, the executing process will likely run for a longer period, then pause execution for a long period for the GC -- without quickly switching between pause/run Rosetta doesn't get mad.
+
+The ZGC collector never stops execution of application threads - so this won't cause any pauses which should fix the issue on a multicore system
+(java garbage collector reference: https://docs.oracle.com/en/java/javase/17/gctuning/available-collectors.html#GUID-414C9D95-297E-4EE3-B0D9-36F158A83393)
+</details>
 
 ## Your first VLSI run!
 
