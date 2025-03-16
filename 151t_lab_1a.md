@@ -565,11 +565,11 @@ You may not want to do this on your actual project as you may lose all your chan
 
 This error should only happen if you are running an x86 Linux VM on Apple Silicon.
 
-Make sure you have pulled the latest version of the OFOT-Chipyard repository. If you have, check `build.sbt` in the `ofot-chipyard` folder and search for `UseZGC`. If it doesn't exist, notify your instructor.
+Make sure you have pulled the latest version of the OFOT-Chipyard repository. If you have, check `build.sbt` in the `ofot-chipyard` folder and search for `+UseConcMarkSweepGC`. If it doesn't exist, notify your instructor.
 
 For an immediate fix, edit your VM settings to use only **1 core**. This will result in an extremely slow build, but it will build.
 
-Instructors: This should've either been fixed (by Apple) or been patched in the Class CY or upstream CY. If none of the above has happened, you need to go into `build.sbt` and add `-XX:-UseG1GC -XX:+UseZGC` flags to use during Scala Build.
+Instructors: This should've either been fixed (by Apple) or been patched in the Class CY or upstream CY. If none of the above has happened, you need to go into `build.sbt` and add `-XX:-UseG1GC -XX:+UseConcMarkSweepGC` flags to use during Scala Build. You also need to add `fork := true` since `javaOptions` in SBT only apply on forks of the JVM.
 
 <details open>
 <summary> If you are curious as to why this happens, open the dropdown </summary>
