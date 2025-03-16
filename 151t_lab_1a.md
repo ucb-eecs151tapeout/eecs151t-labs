@@ -565,7 +565,7 @@ You may not want to do this on your actual project as you may lose all your chan
 
 This error should only happen if you are running an x86 Linux VM on Apple Silicon.
 
-Make sure you have pulled the latest version of the OFOT-Chipyard repository. If you have, check `build.sbt` in the `ofot-chipyard` folder and search for `+UseConcMarkSweepGC`. If it doesn't exist, notify your instructor.
+Make sure you have pulled the latest version of the OFOT-Chipyard repository. If you have, check `build.sbt` in the `ofot-chipyard` folder and search for `+UseConcMarkSweepGC`. If it doesn't exist, search for `+UseConcMarkSweepGC` in `build-setup.sh`. If both searches turn up to be empty, notify your instructor.
 
 For an immediate fix, edit your VM settings to use only **1 core**. This will result in an extremely slow build, but it will build.
 
