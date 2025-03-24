@@ -13,9 +13,13 @@ If you ever need more resources:
  - Chipyard Documentation: [https://chipyard.readthedocs.io/](https://chipyard.readthedocs.io/)
 - Chipyard Basics slides: [https://fires.im/asplos23-slides-pdf/02_chipyard_basics.pdf](https://fires.im/asplos23-slides-pdf/02_chipyard_basics.pdf)
 
-## Chipyard Setup [EDA Machines]
+## Chipyard Setup 
 
-We will now set up your Chipyard environment. 
+If you have an instructional account (ee198-20-xyz preferred, but cs199-xyz also works), follow instructions under [EDA Machines/Instructional Account](#eda-machinesinstructional-account). If you do not have an instructional account, follow setup instructions under [Local on Apple Silicon (ARM) Machines](#chipyard-setup-local-on-apple-silicon-arm-machines).
+
+### Chipyard Setup: EDA Machines/Instructional Account
+
+We will now set up your Chipyard environment.
 
 **(1)** **First, make a branch of our public Chipyard repo fork.** 
 
@@ -172,32 +176,11 @@ The TL;DR of these commands is that you now have a working Chipyard environment!
 >
 >Feel free to look at the scripts themselves if you want to learn more.
 
+### Chipyard Setup: Local on Apple Silicon (ARM) Machines
 
-### Using the environment
+Follow instructions here if you do not have an instructional account (`ee198-20-xxx` account). If you do have an instructional account and have completed setup in the [EDA Machines/Instructional Account](#chipyard-setup-eda-machinesinstructional-account) section, you should skip this section and continue to [Using the environment](#using-the-environment).
 
-To enter your Chipyard environment, you will need to run the following command in each terminal session you open (including new `tmux` sessions).
-
-```
-source /scratch/$USER/ofot-chipyard/env.sh
-```
-
-This env.sh file should exist in the top-level repository. This file sets up necessary environment variables such as PATH for the current Chipyard repository. This is required by future Chipyard steps such as the make system to function correctly.
-
-
-> [!TIP]
-> If you would like to run this automatically on terminal startup, you can add the command to your `~/.bashrc`
-> by running the following:
->
-> ```
-> echo "source /scratch/$USER/ofot-chipyard/env.sh" >> ~/.bashrc
-> ```
-
-Optionally, you can also set the repo path as an environment variable by running `export wd=/scratch/$USER/ofot-chipyard` and then jump to it with `cd $wd`.
-Note that `export` only lasts until you close the terminal session, add a command to `~/.bashrc` to have it run every time you start a new commandline session!
-
-## Chipyard Setup [Local on Apple Silicon (ARM) Machines]
-
-Follow instructions here if you do not have an instructional account (`ee198-20-xxx` account).
+Note: Setting up Chipyard locally on your machine is a highly involved, experimental process that will require a significant amount of compute and disk space on your local machine. For disk space, expect to use around 100+GB for a setup that allows you to run the full tapeout flow. Otherwise, expect to use around 60GB of disk space.
 
 Tl;Dr: We will setup Ubuntu 24.04 LTS via Qemu on your ARM machines where you can install Chipyard in. The following instructions will be for Apple Silicon devices but the gist applies for any other ARM based device.
 
@@ -229,8 +212,7 @@ For Ubuntu 24.04 LTS: https://ubuntu.com/download/server and download **Ubuntu S
     * CPU/CPU Cores: 4 (Can be changed depending on your Host machine specs)
     * Hardware OpenGL Acceleration: Leave **UNCHECKED**
 
-6. On the "Storage" settings page, set "Specify the size of the drive where data will be stored into." to **64 GiB** - (Can be changed depending on your Host machine specs)
-<!-- TODO: @elam/lucy: How much storage will a full tapeout require? -->
+6. On the "Storage" settings page, set "Specify the size of the drive where data will be stored into." to **64 GiB** - (Can be changed depending on your Host machine specs - But expect this number to increase if you are planning to run the entire Sky130 Tapeout Flow up to GDS generation.)
 
 7. On the "Shared Directory" page, **leave all settings as is**. 
 
@@ -240,7 +222,8 @@ For Ubuntu 24.04 LTS: https://ubuntu.com/download/server and download **Ubuntu S
 <img src="./Lab1a_assets/UTM_Summary.png" style="width: 40%; height: 40%">
 </p>
 
-9. If everything looks good, click "Save". **BUT DO NOT BOOT/CLICK THE PLAY BUTTON YOUR MACHINE AFTER SAVING.**
+9. If everything looks good, click "Save". **BUT DO NOT BOOT/CLICK THE PLAY BUTTON YOUR MACHINE AFTER SAVING.** 
+> Note: Starting the machine immediately after creation could cause `wget` commands as part of Chipyard setup to fail when we set Chipyard up. Correcting this problem after Linux has been installed and setup can be quite a headache, so we'd rather deal with that here before the OS is fully installed. 
 
 **(3) Edit VM Settings (Round 1: Before First Boot)**
 
@@ -348,10 +331,10 @@ For Ubuntu 24.04 LTS: https://ubuntu.com/download/server and download **Ubuntu S
 > 
 > Read the note in step (3) for context.
 >
-> We have fixed the problem of getting our Guest machine Internet access but now how do we access the Guest machine from our Host Machine? We could just do everything through the window that UTM gives us, but we want to use SSH and our Host computer's shell because that's a much nicer user experience (Copy paste 🖌️, colors 🎨, etc etc...). But recall we set our machine up like a "new computer" to the network. Under this model, we need the IP of our device on the network to SSH - But since we are using DHCP, this address changes once in a while, killing our SSH session randomly. Also, some networks (such as eduroam) won't allow you to SSH into other devices on the network. What we did in step (5) & (6) was create a Local Area Network (LAN) on your Host that includes your Host & Guest machine, then created new network interfaces on Host & Guest to talk on this LAN. This then allows you to have a local, direct line from your Host machine to your Guest machine via SSH. If you go to your Host machine and ping `192.168.64.2`, you will notice 1-2ms ping time.
+> We have fixed the problem of getting our Guest machine Internet access but now how do we access the Guest machine from our Host Machine? We could just do everything through the window that UTM gives us, but we want to use SSH and our Host computer's shell because that's a much nicer user experience (Copy paste 🖌️, colors 🎨, etc etc...). But recall we set our machine up like a "new computer" to the network. Under this model, we need the IP of our device on the network to SSH - But since we are using DHCP, this address changes once in a while, killing our SSH session randomly. Also, some networks (such as eduroam or other university networks) won't allow you to SSH into other devices on the network. What we did in step (5) & (6) was create a Local Area Network (LAN) on your Host that includes your Host & Guest machine, then created new network interfaces on Host & Guest to talk on this LAN. This then allows you to have a local, direct line from your Host machine to your Guest machine via SSH. If you go to your Host machine and ping `192.168.64.2`, you will notice 1-2ms ping time.
 
 
-**(7) Reboot, SSH, Patch .bashrc Files**
+**(7) Reboot, SSH, .bashrc environment variables**
 
 * At this point, you can reboot Guest. 
 * Once the Guest reboots, you can minimize the UTM window showing you the console and SSH into your machine using `ssh <username>@192.168.64.2` on your Host machine.
@@ -360,15 +343,15 @@ For Ubuntu 24.04 LTS: https://ubuntu.com/download/server and download **Ubuntu S
     touch ~/.eecs151t.bashrc
     vim .eecs151t.bashrc
     ```
-* Write the following to the new file and then save
-    <!-- TODO: @elam/lucy: do we need contents in /home/ff/eecs251b/tools/install/bin/? - Will not accessible on VM -->
+* Write any environment variables that is needed for the OpenROAD flow here. The guide for that is [here](https://chipyard.readthedocs.io/en/latest/VLSI/Sky130-OpenROAD-Tutorial.html).
+
+* If you are planning to use the Commercial (non Open Source RTL-to-GDS) flow:
     ```
     # add paths
-    export PATH=$PATH:/home/ff/eecs251b/tools/install/bin/
-    export LM_LICENSE_FILE=<REDACTED>.eecs.berkeley.edu:<REDACTED>.eecs.berkeley.edu:<REDACTED>.eecs.berkeley.edu
+    export PATH=$PATH:<Path to helper binaries like firtool and CIRCT>
+    export LM_LICENSE_FILE=<Insert License Path or Licensing Server here>
     ```
-    * If you are a current 151T student or affiliated with Berkeley, reach out on the Discord for the `REDACTED` parts.
-    * If you are not affiliated with Berkeley, you need to set the LM_LICENSE_FILE variable to point to your Siemens Mentor EDA license file or licensing server. You can typically talk to your institution's IT department to see if they have purchased a license.
+    * You need to set the `LM_LICENSE_FILE` variable to point to your Siemens Mentor EDA license file or licensing server. You can typically talk to your institution's IT department to see if they have purchased a license.
         * If you do not have a Siemens Mentor EDA license, you can consider using the OpenROAD RTL-to-GDS flow. The guide for that is [here](https://chipyard.readthedocs.io/en/latest/VLSI/Sky130-OpenROAD-Tutorial.html), however this flow can be more buggy than the Commercial flow (Siemens EDA flow).
 
 **(8) Please, please - use tmux!**
@@ -471,8 +454,7 @@ The TL;DR of these commands is that you now have a working Chipyard environment!
 >
 >Feel free to look at the scripts themselves if you want to learn more.
 
-
-### Using the environment
+## Using the environment
 
 To enter your Chipyard environment, you will need to run the following command in each terminal session you open (including new `tmux` sessions).
 
@@ -494,6 +476,21 @@ This env.sh file should exist in the top-level repository. This file sets up nec
 Optionally, you can also set the repo path as an environment variable by running `export wd=/scratch/$USER/ofot-chipyard` and then jump to it with `cd $wd`.
 Note that `export` only lasts until you close the terminal session, add a command to `~/.bashrc` to have it run every time you start a new commandline session!
 
+## Your first VLSI run!
+
+From the `vlsi` folder, after sourcing `env.sh` in the toplevel directory, run:
+``make drc tutorial=sky130-commercial IS_TOP_RUN=0``
+Eventually (again, make sure to run these commands in tmux so they don't get killed when you shut your laptop lid!), you should be presented with a biblical flood of output that ends with these lines:
+
+```
+Pegasus finished normally. 2025-01-30 19:19:53
+Action drc config output written to output.json
+```
+
+This command invokes synthesis, place-and-route, and DRC checking on a simple SoC design. Don't worry too much about what it's doing right now (although you're always welcome to read through the files).
+This is just to make sure your repository is setup right and you are able to invoke the tools you'll need for the class.
+
+Don't forget to complete the Gradescope check-in, and let us know on Discord if you run into any issues!
 
 ## Common setup issues (FAQ)
 
@@ -565,44 +562,17 @@ You may not want to do this on your actual project as you may lose all your chan
 
 This error should only happen if you are running an x86 Linux VM on Apple Silicon.
 
-Make sure you have pulled the latest version of the OFOT-Chipyard repository. If you have, check `build.sbt` in the `ofot-chipyard` folder and search for `+UseConcMarkSweepGC`. If it doesn't exist, search for `+UseConcMarkSweepGC` in `build-setup.sh`. If both searches turn up to be empty, notify your instructor.
-
 For an immediate fix, edit your VM settings to use only **1 core**. This will result in an extremely slow build, but it will build.
 
-Instructors: This should've either been fixed (by Apple) or been patched in the Class CY or upstream CY. If none of the above has happened, you need to go into `build.sbt` and add `-XX:-UseG1GC -XX:+UseConcMarkSweepGC` flags to use during Scala Build. You also need to add `fork := true` since `javaOptions` in SBT only apply on forks of the JVM.
+Make sure you have pulled the latest version of the OFOT-Chipyard repository. If this happens even after using the latest OFOT-Chipyard repository, notify your instructor.
 
-<details open>
-<summary> If you are curious as to why this happens, open the dropdown </summary>
-<br>
-(TL;DR: java G1 garbage collector makes apple's virtualization infra angry, we need to force java to use another garbage collector)
+There isn't a fix for this error with multi-core VMs as of Mar 2025. An extensive bug report has been filed [here](https://github.com/utmapp/UTM/issues/7070).
 
-A hypothesis is that this is a problem with how rosetta handles blippy pauses in application thread execution or some unsupported instruction in the G1 garbage collector  
-
-The G1 garbage collector (which the flag is saying not to use) is a mostly concurrent collector which will pause program execution to "catch up" with the program ([Reference](https://stackoverflow.com/questions/6454201/whats-the-mostly-concurrent-garbage-collector)) - since this collector is designed to meet certain pause-time goals (max \# of secs the main executing thread can pause), my guess is it'll have relatively frequent pauses & unpauses of the main executing thread (our build) - this might make Rosetta unhappy // or G1 just has a particular call that Rosetta doesn't like.
-
-*Why does single core machine fix this?* - if you run `java -XX:+PrintCommandLineFlags -version` ([Reference](https://stackoverflow.com/questions/5024959/find-which-type-of-garbage-collector-is-running)) it prints the garbage collector java currently uses -- on the single core machine, java by default selects `-XX:+UseSerialGC` - this GC has no pause-time requirements - and without this req, the executing process will likely run for a longer period, then pause execution for a long period for the GC -- without quickly switching between pause/run Rosetta doesn't get mad.
-
-The ZGC collector never stops execution of application threads - so this won't cause any pauses which should fix the issue on a multicore system
-(java garbage collector reference: https://docs.oracle.com/en/java/javase/17/gctuning/available-collectors.html#GUID-414C9D95-297E-4EE3-B0D9-36F158A83393)
-</details>
-
-## Your first VLSI run!
-
-From the `vlsi` folder, after sourcing `env.sh` in the toplevel directory, run:
-``make drc tutorial=sky130-commercial IS_TOP_RUN=0``
-Eventually (again, make sure to run these commands in tmux so they don't get killed when you shut your laptop lid!), you should be presented with a biblical flood of output that ends with these lines:
-
-```
-Pegasus finished normally. 2025-01-30 19:19:53
-Action drc config output written to output.json
-```
-
-This command invokes synthesis, place-and-route, and DRC checking on a simple SoC design. Don't worry too much about what it's doing right now (although you're always welcome to read through the files).
-This is just to make sure your repository is setup right and you are able to invoke the tools you'll need for the class.
-
-Don't forget to complete the Gradescope check-in, and let us know on Discord if you run into any issues!
+Instructors: This should've either been fixed (by Apple, OpenJDK, Qemu, or UTM) or been patched in the Class CY or upstream CY. If none of the above has happened, check the status of this [GitHub issue](https://github.com/utmapp/UTM/issues/7070).
 
 # Credits
 
 Parts of this setup are inspired by Spring 2023 Tapeout and Spring 2024 EECS251B.
 Chisel and Chipyard resources have been developed outside the course.
+
+Virtual machine instructions for local Chipyard setup were developed by Jim Fang in Spring 2025.
