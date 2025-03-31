@@ -351,8 +351,8 @@ For Ubuntu 24.04 LTS: https://ubuntu.com/download/server and download **Ubuntu S
     export PATH=$PATH:<Path to helper binaries like firtool and CIRCT>
     export LM_LICENSE_FILE=<Insert License Path or Licensing Server here>
     ```
-    * You need to set the `LM_LICENSE_FILE` variable to point to your Siemens Mentor EDA license file or licensing server. You can typically talk to your institution's IT department to see if they have purchased a license.
-        * If you do not have a Siemens Mentor EDA license, you can consider using the OpenROAD RTL-to-GDS flow. The guide for that is [here](https://chipyard.readthedocs.io/en/latest/VLSI/Sky130-OpenROAD-Tutorial.html), however this flow can be more buggy than the Commercial flow (Siemens EDA flow).
+    * You need to set the `LM_LICENSE_FILE` variable to point to your Commercial tool chain license file or licensing server. You can typically talk to your institution's IT department to see if they have purchased a license.
+        * If you do not have access to Commercial tooling, you can consider using the OpenROAD RTL-to-GDS flow. The guide for that is [here](https://chipyard.readthedocs.io/en/latest/VLSI/Sky130-OpenROAD-Tutorial.html), however this flow can be more buggy than the Commercial flow (Siemens EDA flow).
 
 **(8) Please, please - use tmux!**
 
@@ -563,6 +563,17 @@ You may not want to do this on your actual project as you may lose all your chan
 This error should only happen if you are running an x86 Linux VM on Apple Silicon.
 
 For an immediate fix, edit your VM settings to use only **1 core**. This will result in an extremely slow build, but it will build.
+
+Another fix that seems to have some effect is changing the Qemu process's task policy and in return how MacOS handles scheduling for the Qemu process. 
+
+The bug seems to be triggered when MacOS switches the Qemu process over from Efficiency Cores to Performance Cores and vice versa. That switch seems to cause a Segfault. 
+
+In a terminal:
+```
+sudo taskpolicy -p 30548 -t 5 -l 1
+sudo taskpolicy -b -p 30548
+```
+The first command tells MacOS to set low prioritization for throughput and high prioritization for latency. The second command assigns the process as a background task, pinning it to the efficiency cores. We cannot sustainably pin processes to performance cores, so we have to use the efficiency cores in the meantime.
 
 Make sure you have pulled the latest version of the OFOT-Chipyard repository. If this happens even after using the latest OFOT-Chipyard repository, notify your instructor.
 
