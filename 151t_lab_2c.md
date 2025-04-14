@@ -274,23 +274,21 @@ There's somewhat of an explanation of Rocket Chip Configs in [3.9. Rocket-Chip G
 Here you will find multiple complete Rocket Chip SoC configurations, including the very basic:
 
 ```
-// --------------
-// Rocket Configs
-// --------------
-
 class RocketConfig extends Config(
-  new freechips.rocketchip.subsystem.WithNBigCores(1) ++         // single rocket-core
+  new freechips.rocketchip.rocket.WithNHugeCores(1) ++         // single rocket-core
+  new chipyard.config.AbstractConfig)
+
+class DualRocketConfig extends Config(
+  new freechips.rocketchip.rocket.WithNHugeCores(2) ++
   new chipyard.config.AbstractConfig)
 
 class TinyRocketConfig extends Config(
-  new chipyard.harness.WithDontTouchChipTopPorts(false) ++        // TODO FIX: Don't dontTouch the ports
   new testchipip.soc.WithNoScratchpads ++                         // All memory is the Rocket TCMs
   new freechips.rocketchip.subsystem.WithIncoherentBusTopology ++ // use incoherent bus topology
   new freechips.rocketchip.subsystem.WithNBanks(0) ++             // remove L2$
   new freechips.rocketchip.subsystem.WithNoMemPort ++             // remove backing memory
-  new freechips.rocketchip.subsystem.With1TinyCore ++             // single tiny rocket-core
+  new freechips.rocketchip.rocket.With1TinyCore ++                // single tiny rocket-core
   new chipyard.config.AbstractConfig)
-
 ```
 
 From the names (i.e. no `With` prefix), you can tell that these are 'full' configs, and are to be used either on their own or as default values for other configs.

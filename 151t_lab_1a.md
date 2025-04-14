@@ -130,7 +130,7 @@ git push --set-upstream origin ${USER}-working
 These next scripts may take a very long time (potentially over 32 minutes). Don't forget to `tmux`!
 
 ```
-./build-setup.sh riscv-tools -s 8 -s 7 -s 8 -s 9 -s 10 --use-lean-conda
+./build-setup.sh riscv-tools -s 6 -s 7 -s 8 -s 9 -s 10 --use-lean-conda
 ```
 
 If you get errors here, you can check `build-setup.log` to confirm the issue. 

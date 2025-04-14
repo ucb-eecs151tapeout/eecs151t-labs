@@ -124,7 +124,7 @@ If you don't have `make` experience, this is your chance to see what's behind th
 
 There's a bunch of "TODO"s in our file. If you end up getting bored and want a challenge sometime, you can try to make improvements to this part of the flow - but we won't make (pun intended) you suffer through that!
 
-For example, how may you use what you might've learned in EECS151LA Lab 1 about Makefiles to optionally pass in the project name rather than hardcoding it each time?
+How may you use what you might've learned in EECS151LA Lab 1 about Makefiles to pass in the project name rather than hardcoding it in the file each time? (Hint: what is a Makefile target?)
 
 **[Gradescope] Leave a note if you decided to experiment with the Makefile.**
 
