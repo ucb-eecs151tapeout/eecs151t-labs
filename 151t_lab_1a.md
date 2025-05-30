@@ -72,7 +72,7 @@ How To:
     
 - Windows  
 
-	The classic and most lightweight way to use SSH on Windows is PuTTY ([https://www.putty.org/](https://www.putty.org/)). Download it and login with the FQDN above as the Host and your instructional account username. You can also use WinSCP (winscp.net) for file transfer over SSH.
+    The classic and most lightweight way to use SSH on Windows is PuTTY ([https://www.putty.org/](https://www.putty.org/)). Download it and login with the FQDN above as the Host and your instructional account username. You can also use WinSCP (winscp.net) for file transfer over SSH.
     
     Advanced users may wish to install Windows Subsystem for Linux ([https://docs.microsoft.com/en-us/windows/wsl/install-win10](https://docs.microsoft.com/en-us/windows/wsl/install-win10), Windows 10 build 16215 or later) or Cygwin (cygwin.com) and use SSH, SFTP, and SCP through there.
 
@@ -219,7 +219,7 @@ For Ubuntu 24.04 LTS: https://ubuntu.com/download/server and download **Ubuntu S
 8. Your "Summary" page should look like the following:
 
 <p align="center">
-<img src="./Lab1a_assets/UTM_Summary.png" style="width: 40%; height: 40%">
+<img src="./Lab_1a_assets/UTM_Summary.png" style="width: 40%; height: 40%">
 </p>
 
 9. If everything looks good, click "Save". **BUT DO NOT BOOT/CLICK THE PLAY BUTTON YOUR MACHINE AFTER SAVING.** 
@@ -230,7 +230,7 @@ For Ubuntu 24.04 LTS: https://ubuntu.com/download/server and download **Ubuntu S
 * Go to the VM settings page towards the right of the top bar - shown below:
 
 <p align="center">
-    <img src="./Lab1a_assets/edit-selected-vm-location.png"></img>
+    <img src="./Lab_1a_assets/edit-selected-vm-location.png"></img>
 </p>
 
 * Go to "Network" under the "Devices" Tab on the left
